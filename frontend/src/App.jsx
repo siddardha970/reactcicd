@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const CartContext = createContext(null);
 function useCart() {
@@ -85,7 +86,7 @@ function ProductsPage() {
 
   useEffect(() => {
     let isMounted = true;
-    fetch('/api/products')
+    fetch(`${API_BASE}/api/products`)
       .then((r) => r.json())
       .then((data) => {
         if (isMounted) {
@@ -187,7 +188,7 @@ function CheckoutPage() {
     setSubmitting(true);
     setError('');
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
