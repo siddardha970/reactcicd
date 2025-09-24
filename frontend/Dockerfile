@@ -11,8 +11,10 @@ RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
-RUN npm i -g vite@5.4.10
+COPY package.json package-lock.json* ./
+RUN npm ci || npm install --no-audit --no-fund
 COPY --from=build /app/dist ./dist
+COPY server.js ./server.js
 EXPOSE 5173
-CMD ["vite", "preview", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["node", "server.js"]
 
