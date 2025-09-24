@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import mockProducts from './mockData.js';
 const API_BASE = import.meta.env.VITE_API_BASE || '';
+const MOCK = (import.meta.env.VITE_MOCK === '1' || import.meta.env.VITE_MOCK === 'true');
 
 const CartContext = createContext(null);
 function useCart() {
@@ -86,15 +88,20 @@ function ProductsPage() {
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API_BASE}/api/products`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (isMounted) {
-          setProducts(data);
-          setLoading(false);
-        }
-      })
-      .catch(() => setLoading(false));
+    if (MOCK) {
+      setProducts(mockProducts);
+      setLoading(false);
+    } else {
+      fetch(`${API_BASE}/api/products`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (isMounted) {
+            setProducts(data);
+            setLoading(false);
+          }
+        })
+        .catch(() => setLoading(false));
+    }
     return () => {
       isMounted = false;
     };
@@ -188,6 +195,15 @@ function CheckoutPage() {
     setSubmitting(true);
     setError('');
     try {
+      if (MOCK) {
+        await new Promise((r) => setTimeout(r, 400));
+        const fakeOrderId = Math.floor(Math.random() * 900000 + 100000);
+        clear();
+        alert(`Order #${fakeOrderId} placed. Total ${currency(totalCents)}.`);
+        navigate('/');
+        return;
+      }
+
       const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -3,7 +3,9 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci || npm install --no-audit --no-fund
 ARG VITE_API_BASE
+ARG VITE_MOCK
 ENV VITE_API_BASE=${VITE_API_BASE}
+ENV VITE_MOCK=${VITE_MOCK}
 COPY . .
 RUN npm run build
 
