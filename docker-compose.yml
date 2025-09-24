@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: ./backend
+    image: shop-backend:local
+    container_name: shop-api
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend/data:/app/data
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: http://api:4000
+    image: shop-frontend:local
+    container_name: shop-web
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
